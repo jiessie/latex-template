@@ -1,0 +1,166 @@
+\documentclass[addpoints]{exam}
+\usepackage{amsmath,amsthm,amssymb,url}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[pdftex]{hyperref}
+\usepackage{tkz-berge}
+\graphicspath{ {./images/} }
+
+
+\newtheorem{lemma}{Lemma}[section]
+\newcommand{\var}{\text{Var}}
+\title{CS 6968: Algorithms and Approximation, HW2}
+\date{Due Date:  Feb 4, Jie Cao, u1012011}
+\begin{document}
+\maketitle
+\begin{center}
+\fbox{\fbox{\parbox{5.5in}{\centering
+This assignment has \numquestions\ questions, for a total of \numpoints\
+points.
+Unless otherwise specified, complete and reasoned arguments will be
+expected for all answers. 
+}}}
+\end{center}
+
+\qformat{Question \thequestion: \thequestiontitle\dotfill \textbf{[\totalpoints]}}
+\pointname{}
+\bonuspointname{}
+\pointformat{[\bfseries\thepoints]}
+
+\printanswers 
+
+\begin{center}
+  \gradetable
+\end{center}
+\newpage
+
+
+
+\begin{questions}
+
+\titledquestion{3-SAT}[10]
+A 3-SAT formula on n variables with m clauses is the following: we have n boolean variables $x_1,x_2,...,x_n$, and m clauses $C_1,C_2,...,C_m$. Each $C_i$ is the boolean OR of three distinct literals (a literal is just a variable $x_i$ or its negation $\neg x_i$). An example of a clause is $x_2 \vee x_4 \vee \neg x_5$. An assignment $\sigma \in \{T,F\}^n$ to the $x_j?s$ is said to satisfy clause $C_i$ if one of the literals in the clause is set to TRUE. (E.g., to satisfy the clause above, we must have either $x_2$ or $x_4$ to be TRUE, or $x_5$ to be FALSE.) \\
+Show that for any 3-SAT formular with m clauses, there exists an assignment that satisfies at least 7m/8 clauses. 
+\begin{solution}
+According to the general probabilistic method, to prove the existence of a combinatory objects, we can prove that picking a random assignment then it satisfies at least 7m/8 clauses with none-zero probability.
+Define $X_i=\{1,0\}$ means the ith clause is satisfied or not, then $X= \sum_{i}^{m} X_i$ denotes the total number of satified clause.  \\
+\begin{align*}
+E(X) & = E(\sum_{i}^{m} X_i) \\
+	& = \sum{i}^{m} E(X_i) \\
+	& = m E(X_i) \\
+	& = m (0*(1/2*1/2*1/2)+1*(1-1/8)) \\
+	& = 7m/8 
+\end{align*} 
+Hence,  according to the first moment principle, for any variable X, $Pr[X \geq E(X) = 7m/8] > 0 $ is nonzero. There exist a assignment that satisfies at least 7m/8 clauses. 
+\end{solution}
+
+\titledquestion{Integer coloring}[10]
+A set system $\mathcal{F}$ over the set[n]=\{1,2,...,n\}is a collection of subsets $S_1,S_2,...,S_m$ of [n]. Our goal is to color the integers {1,2,...,n} with two colors (say -1,1), such that each of the sets $S_i$ is as balanced as possible. Formally, if we have a coloring $ \chi:[n] \rightarrow \{-1,1\}$, the imbalance (or discrepancy) is defined as
+\[ \max_{1 \leq i \leq m} \sum_{j \in S_i} \chi(j)\]
+Prove that for any set system $\mathcal{F}$ with m sets, there exists a coloring with imbalance at most $O(\sqrt{n\log m})$
+\begin{solution}
+According to the general probabilistic method, we need to prove that for any set system $\mathcal{F}$, randomly coloring can make the imbalance at most $O(\sqrt{n\log m})$ with nonezero probability .\\
+\begin{align*}
+Pr(\max_{1 \leq i \leq m} \sum_{j \in S_i} \chi(j) \leq O(\sqrt{n\log m}) ) > 0 \\
+Pr(\sum_{j \in S_1} \chi(j) \leq O(\sqrt{n\log m}) \wedge \sum_{j \in S_m} \chi(j) \leq O(\sqrt{n\log m}) ) ...  >0 \\
+1 -  Pr(\sum_{j \in S_1} \chi(j) > O(\sqrt{n\log m}) \vee \sum_{j \in S_m} \chi(j) > O(\sqrt{n\log m}) ) > 0 \\
+1 -  \sum{i}^{m}Pr(\sum_{j \in S_i} \chi(j) > O(\sqrt{n\log m})) > 0 \\
+1- m *  Pr(\sum_{j \in S_i} \chi(j) > O(\sqrt{n\log m})) >0
+\end{align*}
+Thus, we need to proof 
+\[Pr(\sum_{j \in S_i} \chi(j) > O(\sqrt{n\log m})) < 1/m \]
+In random case, \[Pr(\chi(j) = 1) = Pr(\chi(j) = -1) = 1/2\]
+according the chernoff bound, 
+\begin{align*}
+Pr(\sum_{j \in S_i} \chi(j)> O(\sqrt{n\log m})) \leq e^{\frac{-a^2}{2n}} \quad where a = O(\sqrt{n\log m}) >0 \\
+Pr(\sum_{j \in S_i} \chi(j) > O(\sqrt{n\log m})) \leq e^{\frac{-\log m}{2}} = \frac{1}{2me^2}< 1/m
+\end{align*}
+Thus, we can proof from bottom to top, and get that the probability is nonzero. 
+\end{solution}
+
+\titledquestion{Minimum Eigenvalue}[10]
+Let G be a connected $d$-regular graph, and consider its adjacency matrix $A_G$.
+Prove that $\lambda _{min}(A_G) = -d$ if and only if G is bipartite.
+
+\begin{solution}
+  First, if G is d-regular bipartite graph,  we can denote two seperate set of vertices  S,T, and in both set, we all have d neighbors for every vertex. Thus, we can easy find a eigenvector that 1 for vertice in S, and -1 for vertice in T.  Then the eigenvector is -d. What's more,  for taking absolute on eigenvalue equality. We can get 
+ $|\lambda||x_i| \leq \sum_{ij}|A_{ij}||x_j| \leq d|x_i|$.
+ Then $|\lambda| \leq d$,  and $-d \leq \lambda \leq d$. Hence, the -d eigenvalue for bipartite graph must be the minimum eigenvalue.
+ 
+ By constradiction, If G is not bipartite graph, we can show that the minimum value must not be -d.
+ if the minimum eigenvalue is -d, then \[-dx_i = \sum_{j} A_{ij}x_j\]
+ Hence, in d-regular graph, vertex i has exactly d degree, then exactly d $A_{i,j}x_j$ both 1 or -1, it is up to the value of $x_i$, thus it obviously divid the vertice into two seperated parts, which is a bipartite graph. Then it contradict with the assuption that G is not a bipartite graph. 
+\end{solution}
+
+\titledquestion{$\lambda_2(L_G)$}[10]
+Let G be a connected d-regular graph, and suppose the Laplacian $L_G$ has eigen-
+values $0 \leq \lambda_2 \leq ... \leq \lambda_n$. Then, without using Cheeger's inequality, prove that $\lambda_2 \geq \frac{1}{4n^2}.$
+
+\begin{solution} 
+According to the constraints, we must can found that exist u,v that  $|x_u - x_v| \geq k$, now we need to bound the k according to the following anlysis.
+\begin{align*}
+& \sum_{i}^{n} x_i = 0 \\
+& (\sum_{i}^{n} x_i)^2 = 0 \\
+&  \sum_{i}^{n} x_i^2  + 2 * \sum_{i,j, i \neq j} x_u x_v = 0 \\
+& \sum_{i,j, i \neq j} x_u x_v = -1/2 \\
+\end{align*} 
+By contradiction, we assume that all $|x_u-x_v| < k$, then we can have the following contradiction:
+\begin{align*}
+ (x_u-x_v)^2 & < k^2 \\
+ \sum_{u,v,u \neq v}(x_u-x_v)^2 & < {n \choose 2}  k^2    \\
+ (n-1)/2 * 2 - 2* \sum_{i,j, i \neq j} x_u x_v  & < \frac{n*(n-1)}{2} k^2   \\
+ k & > \sqrt {\frac{2}{n-1}} \\
+\end{align*} 
+Hence, we can show that exists u and v $|x_u- x_v| \geq \sqrt {\frac{2}{n-1}}$.
+Now we can relax the $\lambda_2$ as follows:
+\begin{align*}
+\lambda_2 & = \min_{|x|=1,\sum_{x_i = 0}} \sum_{\{i,j\} \in E} (x_i - y_i)^2 \\
+		 & \geq \min_{|x|=1,\sum_{x_i} = 0} \sum_{\{i,j\} \in E \and {i,j} \in Path(u,v)} (x_i - y_i)^2 \\
+		 & \geq \min_{|x|=1,\sum_{x_i} = 0}  (x_u-x_i + x_i - x_j ... + x_v)^2/|Path(u,v)-1| \quad Inequality  \\
+		 & \geq \min_{|x|=1,\sum_{x_i} = 0}  (x_u-x_v)^2/n \\
+		 & = \frac{2}{n^2}
+\end{align*}
+Of course when let $k = \frac{1}{\sqrt{n}}$ , we can got the bound  $\frac{1}{n^2}$
+\end{solution}
+
+\titledquestion{neighborhood and diameter}
+Let G be a d-regular graph with the property that every subset S of size at most
+n/2 has expansion at least 1/4, i.e.,
+\[\frac{E(S,V \backslash S)} {d|S|} \geq 1/4\]
+\begin{parts}
+\part[3] Define the neighborhood N(S) of a set S to be the set of all vertices $u \in V \backslash S$ that have at least one edge to a vertex in S. Prove that for any V of size at most n/2 in our graph G, 
+\[|N(S)| \geq |S|/4\]
+\begin{solution}
+Since the degree of every vertex for d-regular graph is d, then all end points of edges $E(S,V \backslash S) $should cover N(S). Hence, the $|N(S)| \geq \frac {E(S,V \backslash S)}{d}$
+Then using the equation in the question describetion, we can get 
+\[|N(S)| \geq |S|/4\]
+\end{solution}
+
+\part[7] Prove that the diameter of the graph is O(log n). I.e., for any $u, v \in V$ , prove that there exists a path of length at most O(log n) between u and v. \\
+HINT: start with u, and consider the number of vertices at a distance l from u; inductively do this for l = 1,2,...; for l = O(logn), argue that the number is $\geq$ n/2; do the same with v.
+\begin{solution}
+Consider any two vertices u, v in the graph. Define the following set inductively:
+\begin{align*}
+& U_0 = {u}\\
+& U_i \geq \min\{\frac{1}{4} ^l |U_0|, n/2)\}\\
+\end{align*}
+$U_i$ is the set of vertices reachable from u in at most i steps.
+ As we has proofed in the above question, \[N(U) \geq min((1/4)|U|,n/2)\]
+then the set of vertices at distance l from u is a set of size at least \[\min\{(1/4)^l,n/2\}\]
+We can do this for any v like this.  When $l \geq O(\log n)$, then at least half of all vertices are at distance O(log n) from u and at least half are at distance O(log n) from v. Thus, there must be some vertex z that is at distance O(log n) from both u and v, which means that there is a path of length O(log n) from any u to any v. Hence, the diameter of the graph is $O(\log n)$
+\end{solution}
+\end{parts}
+
+
+
+\end{questions}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
